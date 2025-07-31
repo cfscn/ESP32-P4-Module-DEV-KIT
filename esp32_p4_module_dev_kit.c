@@ -23,6 +23,7 @@
 #elif CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
 #include "esp_rom_sys.h"
 #include "esp_lcd_st7701.h"
+#include "esp_lcd_touch_ft6x36.h"
 #else
 #include "esp_lcd_dsi.h"
 #endif
@@ -834,9 +835,6 @@ err:
 
 esp_err_t bsp_touch_new(const bsp_touch_config_t *config, esp_lcd_touch_handle_t *ret_touch)
 {
-#if CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
-    
-#else
     /* Initilize I2C */
     BSP_ERROR_CHECK_RETURN_ERR(bsp_i2c_init());
 
@@ -883,6 +881,8 @@ esp_err_t bsp_touch_new(const bsp_touch_config_t *config, esp_lcd_touch_handle_t
     esp_lcd_panel_io_i2c_config_t tp_io_config = {
 #if CONFIG_BSP_LCD_TYPE_800_1280_10_1_INCH || CONFIG_BSP_LCD_TYPE_800_1280_10_1_INCH_A || CONFIG_BSP_LCD_TYPE_800_1280_8_INCH_A || CONFIG_BSP_LCD_TYPE_720_1280_7_INCH_A || CONFIG_BSP_LCD_TYPE_720_1280_5_INCH_A
         .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
+#elif CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
+        .dev_addr = ESP_LCD_TOUCH_IO_I2C_FT6x36_ADDRESS,
 #else
         .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP,
 #endif
@@ -894,6 +894,9 @@ esp_err_t bsp_touch_new(const bsp_touch_config_t *config, esp_lcd_touch_handle_t
         }};
     tp_io_config.scl_speed_hz = CONFIG_BSP_I2C_CLK_SPEED_HZ;
     ESP_RETURN_ON_ERROR(esp_lcd_new_panel_io_i2c(i2c_handle, &tp_io_config, &tp_io_handle), TAG, "");
+#if CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
+    return esp_lcd_touch_new_i2c_ft6x36(tp_io_handle, &tp_cfg, ret_touch);
+#else
     return esp_lcd_touch_new_i2c_gt911(tp_io_handle, &tp_cfg, ret_touch);
 #endif
 }
