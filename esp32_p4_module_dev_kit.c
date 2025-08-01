@@ -888,7 +888,7 @@ esp_err_t bsp_touch_new(const bsp_touch_config_t *config, esp_lcd_touch_handle_t
 #endif
         .control_phase_bytes = 1,
         .dc_bit_offset = 0,
-        .lcd_cmd_bits = 16,
+        .lcd_cmd_bits = 8,
         .flags = {
             .disable_control_phase = 1,
         }};
