@@ -17,7 +17,7 @@ dependencies:
 description: Waveshare ESP32-P4-Module-DEV-KIT Development Board Compatible with a 2.1-inch circular screen (480x480 resolution) via DSI interface, paired with ST7701S driver chip. It also integrates FT3236/FT6X36 I2C touch driver for precise touch interaction.
 repository: git://github.com/cfscn/ESP32-P4-Module-DEV-KIT.git
 repository_info:
-  commit_sha: fc3d951247e362c7e6bb1c637a1784ddf1987aa8
+  commit_sha: 9e93cb849b73ff5a0ee084a619852b7d090bb92a
   path: esp32_p4_module_dev_kit
 tags:
 - bsp
