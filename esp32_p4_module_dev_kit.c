@@ -23,7 +23,6 @@
 #elif CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
 #include "esp_rom_sys.h"
 #include "esp_lcd_st7701.h"
-#include "esp_lcd_touch_ft6x36.h"
 #else
 #include "esp_lcd_dsi.h"
 #endif
@@ -32,6 +31,7 @@
 #include "bsp/display.h"
 #include "bsp/touch.h"
 #if CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
+#include "esp_lcd_touch_ft6x36.h"
 #else
 #include "esp_lcd_touch_gt911.h"
 #endif
@@ -407,6 +407,9 @@ esp_codec_dev_handle_t bsp_audio_codec_microphone_init(void)
 
 esp_err_t bsp_display_brightness_init(void)
 {
+    /* Initilize I2C */
+    BSP_ERROR_CHECK_RETURN_ERR(bsp_i2c_init());
+
 #if CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
     gpio_config_t bk_gpio_config = {
         .pin_bit_mask = 1ULL << BSP_LCD_BACKLIGHT,
@@ -414,8 +417,6 @@ esp_err_t bsp_display_brightness_init(void)
     };
     ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
     ESP_ERROR_CHECK(gpio_set_level(BSP_LCD_BACKLIGHT, 1));
-#else
-    bsp_i2c_init();
 #endif
     return ESP_OK;
 }
@@ -878,22 +879,25 @@ esp_err_t bsp_touch_new(const bsp_touch_config_t *config, esp_lcd_touch_handle_t
         },
     };
     esp_lcd_panel_io_handle_t tp_io_handle = NULL;
+
+#if CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
+    esp_lcd_panel_io_i2c_config_t tp_io_config = ESP_LCD_TOUCH_IO_I2C_FT6x36_CONFIG();
+#else
     esp_lcd_panel_io_i2c_config_t tp_io_config = {
 #if CONFIG_BSP_LCD_TYPE_800_1280_10_1_INCH || CONFIG_BSP_LCD_TYPE_800_1280_10_1_INCH_A || CONFIG_BSP_LCD_TYPE_800_1280_8_INCH_A || CONFIG_BSP_LCD_TYPE_720_1280_7_INCH_A || CONFIG_BSP_LCD_TYPE_720_1280_5_INCH_A
         .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS,
-#elif CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
-        .dev_addr = ESP_LCD_TOUCH_IO_I2C_FT6x36_ADDRESS,
 #else
         .dev_addr = ESP_LCD_TOUCH_IO_I2C_GT911_ADDRESS_BACKUP,
 #endif
         .control_phase_bytes = 1,
         .dc_bit_offset = 0,
-        .lcd_cmd_bits = 8,
+        .lcd_cmd_bits = 16,
         .flags = {
             .disable_control_phase = 1,
         }};
+#endif
     tp_io_config.scl_speed_hz = CONFIG_BSP_I2C_CLK_SPEED_HZ;
-    ESP_RETURN_ON_ERROR(esp_lcd_new_panel_io_i2c(i2c_handle, &tp_io_config, &tp_io_handle), TAG, "");
+    ESP_RETURN_ON_ERROR(esp_lcd_new_panel_io_i2c(i2c_handle, &tp_io_config, &tp_io_handle), TAG, "New panel IO failed");
 #if CONFIG_BSP_LCD_TYPE_480_480_2_1_INCH
     return esp_lcd_touch_new_i2c_ft6x36(tp_io_handle, &tp_cfg, ret_touch);
 #else
