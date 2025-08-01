@@ -2,6 +2,10 @@
 
 [![Component Registry](https://components.espressif.com/components/waveshare/esp32_p4_module_dev_kit/badge.svg)](https://components.espressif.com/components/cfscn/esp32_p4_module_dev_kit)
 
+This repository is forked from waveshare/esp32_p4_nano
+
+Waveshare ESP32-P4-Module-DEV-KIT Development Board Compatible with a 2.1-inch circular screen (480x480 resolution) via DSI interface, paired with ST7701S driver chip. It also integrates FT3236/FT6X36 I2C touch driver for precise touch interaction.
+
 ESP32-P4-Module-DEV-KIT is a small size and highly integrated development board designed by waveshare electronics based on ESP32-P4 chip
 | HW version | BSP Version |
 | :--------: | :---------: |
@@ -31,6 +35,7 @@ Selection LCD display `Board Support Package(ESP32-P4) --> Display --> Select LC
 - Waveshare 10.1inch DSI LCD (C) Display
 - Waveshare 8.8inch DSI LCD Display
 - Waveshare 11.9inch DSI LCD Display
+- Custom 2.1inch DSI LCD Display
 
 Selection color format `Board Support Package(ESP32-P4) --> Display --> Select LCD color format`
 - RGB565 (default)
